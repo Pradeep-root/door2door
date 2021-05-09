@@ -1,5 +1,6 @@
-package com.pradeep.door2door.data
+package com.pradeep.door2door.data.network
 
+import com.pradeep.door2door.data.models.BookingInfo
 import com.tinder.scarlet.WebSocket
 import com.tinder.scarlet.ws.Receive
 import io.reactivex.Flowable
@@ -11,5 +12,6 @@ interface Door2DoorSocket {
     fun observeWebSocketEvent(): Flowable<WebSocket.Event>
 
     @Receive
-    fun observeNews(): Flowable<BookingInfo>
+    fun observeSocket(): Flowable<BookingInfo>
+
 }

@@ -1,6 +1,6 @@
 package com.pradeep.door2door.di
 
-import com.pradeep.door2door.data.Door2DoorSocket
+import com.pradeep.door2door.data.network.Door2DoorSocket
 import com.pradeep.door2door.repository.Door2DoorRepository
 import com.tinder.scarlet.Scarlet
 import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter

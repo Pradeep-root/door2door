@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_margin">4dp</dimen>
+    <dimen name="card_redius">4dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="location_icon_with">24dp</dimen>
+    <dimen name="location_icon_height">24dp</dimen>
+    <dimen name="source_img_margin">10dp</dimen>
+    <dimen name="source_text_start_margin">10dp</dimen>
+    <dimen name="soruce_text_end_margin">16dp</dimen>
+    <dimen name="destination_text_start_margin">10dp</dimen>
+    <dimen name="destination_text_end_margin">16dp</dimen>
+    <dimen name="vehical_status_icon_widht">50dp</dimen>
+    <dimen name="vehical_status_icon_height">50dp</dimen>
+    <dimen name="medium_text_size">16sp</dimen>
+</resources>

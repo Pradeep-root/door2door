@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'kotlin-android-extensions'
 }
 
 android {
@@ -51,6 +52,8 @@ dependencies {
     implementation "com.tinder.scarlet:websocket-okhttp:0.1.10"
     implementation "com.tinder.scarlet:stream-adapter-rxjava2:0.1.10"
     implementation "com.tinder.scarlet:lifecycle-android:0.1.10"
+
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
     implementation group: 'com.tinder.scarlet', name: 'message-adapter-gson', version: '0.1.9'
 
