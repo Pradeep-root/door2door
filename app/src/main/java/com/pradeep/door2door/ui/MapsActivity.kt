@@ -1,10 +1,12 @@
 package com.pradeep.door2door.ui
 
 import android.content.Context
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
 import android.os.Bundle
-import android.os.Handler
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +16,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
 import com.pradeep.door2door.R
+import com.pradeep.door2door.broadcast.ConnectionReceiver
 import com.pradeep.door2door.data.models.BookingInfo
 import com.pradeep.door2door.utils.AnimationUtils
 import com.pradeep.door2door.utils.MapUtils
@@ -25,10 +29,10 @@ import kotlinx.android.synthetic.main.activity_maps.*
 @AndroidEntryPoint
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    private lateinit var intentFilter: IntentFilter
     private lateinit var mMap: GoogleMap
     private lateinit var  viewModel : MapsViewModel
-    private lateinit var handler: Handler
-    private lateinit var runnable: Runnable
+    private lateinit var receiver :ConnectionReceiver
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,8 +45,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         viewModel = ViewModelProvider(this).get(MapsViewModel::class.java)
 
+        connectivityCheckSetup()
+
         setupBookingInfoObserver()
     }
+
+    private fun connectivityCheckSetup(){
+        receiver = ConnectionReceiver()
+        intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+
+        receiver.connectivityMutableLiveData.observe(this, Observer {
+            if (!it) {
+                showSnakeBar(getString(R.string.no_internet_connection))
+            }
+        })
+    }
+
+
+   private fun showSnakeBar(msg: String){
+        Snackbar.make(main_layout, msg, Snackbar.LENGTH_SHORT)
+            .show()
+    }
+
 
     private fun setupBookingInfoObserver() {
 
@@ -57,14 +81,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             showMovingCab(LatLng(latitude, longitude))
                         }
 
-                       bookingInfo?.let {
-                           updateBookingInfo(bookingInfo)
-                       }
+                        bookingInfo?.let {
+                            updateBookingInfo(bookingInfo)
+                        }
                     }
                 }
 
                 Status.ERROR -> {
-
+                    Toast.makeText(this@MapsActivity, it.message, Toast.LENGTH_LONG).show()
                 }
 
                 Status.LOADING -> {
@@ -72,6 +96,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(receiver, intentFilter)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
     }
 
     private fun updateBookingInfo(bookingInfo: BookingInfo) {
@@ -120,7 +154,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun addCarMarkerAndGet(latLng: LatLng): Marker {
         val bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(getCarBitmap(this))
         return mMap.addMarker(
-                MarkerOptions().position(latLng).flat(true).icon(bitmapDescriptor)
+            MarkerOptions().position(latLng).flat(true).icon(bitmapDescriptor)
         )
     }
 
@@ -148,8 +182,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (currentLatLng != null && previousLatLng != null) {
                     val multiplier = va.animatedFraction
                     val nextLocation = LatLng(
-                            multiplier * currentLatLng!!.latitude + (1 - multiplier) * previousLatLng!!.latitude,
-                            multiplier * currentLatLng!!.longitude + (1 - multiplier) * previousLatLng!!.longitude
+                        multiplier * currentLatLng!!.latitude + (1 - multiplier) * previousLatLng!!.latitude,
+                        multiplier * currentLatLng!!.longitude + (1 - multiplier) * previousLatLng!!.longitude
                     )
                     movingCabMarker?.position = nextLocation
                     val rotation = MapUtils.getRotation(previousLatLng!!, nextLocation)
